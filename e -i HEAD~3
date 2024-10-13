@@ -1,0 +1,173 @@
+[33mcommit 4ce747df035a90849c2342a8a0ca52391987170e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Oct 11 22:25:02 2024 +1100
+
+    apikey try
+
+[33mcommit 3edf0b406eed9df9fa8e866cd0bee020624cf596[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Oct 11 22:07:23 2024 +1100
+
+    apikey
+
+[33mcommit f27285b82840bf5935eee68fae531bb32a079d0c[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Oct 11 20:50:51 2024 +1100
+
+    firebase function setup
+
+[33mcommit b47a218211dfa7a14a473fddb7744c9b81f70a00[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Oct 11 20:30:56 2024 +1100
+
+    firebase setup-done
+
+[33mcommit 33e877d621c997a54d09f402c67813bdbc731d4b[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Oct 11 14:35:53 2024 +1100
+
+    Firebaselogin&register function done
+
+[33mcommit 8b14c352320d5800fd1c12c9a0d1f3c4e2f64f6f[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Wed Oct 9 22:48:07 2024 +1100
+
+    Firebase_Setup
+
+[33mcommit 47a4be07171fb19aa2b9aa4da8d8fe017b663e42[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Wed Oct 9 22:26:12 2024 +1100
+
+    setup for A3
+
+[33mcommit 5ad4a183471748507cbfc3fb7eedd2c04c8d540b[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Tue Sep 3 10:41:58 2024 +1000
+
+    navigation-update
+
+[33mcommit 672789cf714878884d02937f6c81cfa808bb69b7[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Mon Sep 2 02:57:42 2024 +1000
+
+    done
+
+[33mcommit 915a92894cb99ace1723a32918656079b2ee4c98[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Mon Sep 2 01:09:14 2024 +1000
+
+    done
+
+[33mcommit 405e30e646abd43f397cbe53fe0cfd3a518de872[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Mon Sep 2 00:56:59 2024 +1000
+
+    Done
+
+[33mcommit 871532def9185903f349e7390748e80a848092a7[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 22:55:47 2024 +1000
+
+    final2
+
+[33mcommit 70c6272e838213fc6da68ae82137a061bd657044[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 22:43:07 2024 +1000
+
+    Final1
+
+[33mcommit 4f3869d8dad18c701825fbc1730dc7a7f7e7cfd1[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 22:00:38 2024 +1000
+
+    admin2
+
+[33mcommit eea262c1815bceb10315884d187cf8a2de2d6cdb[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 21:43:30 2024 +1000
+
+    Admin
+
+[33mcommit 3f4a62ea3f7c8c9a275014028ce3a5a1d8106bc6[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 20:46:01 2024 +1000
+
+    Rating-done
+
+[33mcommit 5ea18f6e023417298a86c64a244d1a815d2316f4[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 18:53:08 2024 +1000
+
+    register-done
+
+[33mcommit fdb3591b6221542e658b9e6ae392b272cf404c55[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 17:33:35 2024 +1000
+
+    Register2
+
+[33mcommit e02527c289d0fa3ef71c03c47dbdc98dd0d089a9[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 17:23:16 2024 +1000
+
+    logout1
+
+[33mcommit 0ab3ec3bc697b3fb280762ee7cf4821bf7f03655[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 16:12:08 2024 +1000
+
+    Register1
+
+[33mcommit 16692251e6e906cf99bd57976f89a3ac3cc2551c[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 11:50:12 2024 +1000
+
+    homepage-done
+
+[33mcommit a2d551fc13e1b0cd466fbc4c75ad40a31fed8a31[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 01:49:52 2024 +1000
+
+    homepage2
+
+[33mcommit e8d09739e1304d795ff452b487232d9a51f71223[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Sep 1 00:09:18 2024 +1000
+
+    Navigation-done
+
+[33mcommit e00daf51b5023076d50560fce561a127c394a478[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sat Aug 31 21:02:05 2024 +1000
+
+    StarRating
+
+[33mcommit a00287602d7b3e275fd29855beb44fa9063a7bb3[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sat Aug 31 00:29:28 2024 +1000
+
+    Homepage1
+
+[33mcommit 08151ccfb37212011920b463aa72878c58023a2f[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Aug 30 20:50:44 2024 +1000
+
+    Optimise login page1
+
+[33mcommit 4cd304932d42a14e648fb691b462f42529aa8f37[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Fri Aug 30 20:35:41 2024 +1000
+
+    login-done
+
+[33mcommit fefbf53ba235e087c62353ffcc9dc6ac2ebdda29[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Sun Aug 25 21:30:28 2024 +1000
+
+    Setting up the login and about pages
+
+[33mcommit 82980ce03cf350cd9cd796e175c1309ec01a9199[m
+Author: Jay01212 <jche0295@student.monash.edu>
+Date:   Wed Aug 21 16:20:49 2024 +1000
+
+    Assignment2 Start
