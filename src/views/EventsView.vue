@@ -11,7 +11,11 @@
                 <option value="Canceled">Canceled</option>
             </select>
             <button @click="clearFilters" class="btn btn-secondary">Clear Filters</button>
-            <button @click="exportToCSV" class="btn btn-primary">Export to CSV</button>
+            <select v-model="exportFormat" class="form-select">
+                <option value="csv">CSV</option>
+                <option value="pdf">PDF</option>
+            </select>
+            <button @click="exportData" class="btn btn-primary">Export</button>
         </div>
 
         <div class="table-responsive">
@@ -121,6 +125,7 @@ export default {
         const sortOrder = ref('asc');
         const currentPage = ref(1);
         const itemsPerPage = 10;
+        const exportFormat = ref('csv');
 
         const filteredEvents = computed(() => {
             return events.value.filter(event => {
@@ -218,6 +223,62 @@ export default {
             }
         };
 
+        const exportToPDF = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text('Mental Health Events', 14, 22);
+
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+
+            // Table header
+            let yPos = 30;
+            const headers = ['Event Name', 'Details', 'Date', 'Location', 'Status'];
+            const columnWidths = [50, 60, 25, 30, 25];
+
+            headers.forEach((header, i) => {
+                doc.text(header, 14 + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), yPos);
+            });
+
+            yPos += 10;
+
+            // Table content
+            sortedEvents.value.forEach((event) => {
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+
+                const row = [
+                    event.eventName,
+                    event.details,
+                    formatDate(event.date),
+                    event.location,
+                    event.status
+                ];
+
+                row.forEach((cell, i) => {
+                    doc.text(cell.toString(), 14 + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), yPos, {
+                        maxWidth: columnWidths[i]
+                    });
+                });
+
+                yPos += 20;
+            });
+
+            doc.save('mental_health_events.pdf');
+        };
+
+        const exportData = () => {
+            if (exportFormat.value === 'csv') {
+                exportToCSV();
+            } else if (exportFormat.value === 'pdf') {
+                exportToPDF();
+            }
+        };
+
         return {
             searchQuery,
             statusFilter,
@@ -231,7 +292,8 @@ export default {
             changePage,
             formatDate,
             getStatusClass,
-            exportToCSV
+            exportFormat,
+            exportData
         };
     }
 };
