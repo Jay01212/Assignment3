@@ -15,7 +15,7 @@
             <router-link to="/about" class="nav-link" active-class="active" @click="closeNavbar">About</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/resources" class="nav-link" active-class="active"
+            <router-link to="/Resource" class="nav-link" active-class="active"
               @click="closeNavbar">Resources</router-link>
           </li>
           <li class="nav-item">
