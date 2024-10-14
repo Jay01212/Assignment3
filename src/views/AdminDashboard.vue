@@ -1,7 +1,20 @@
 <template>
-    <div class="admin-dashboard">
+    <div class="admin-dashboard d-flex">
+        <!-- 侧边栏 -->
+        <div class="sidebar bg-light p-3" style="width: 250px;">
+            <h3 class="mb-4">管理功能</h3>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <router-link to="/admin/send-email" class="nav-link">发送邮件</router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/admin/add-event" class="nav-link">活动管理</router-link>
+                </li>
+            </ul>
+        </div>
+
         <!-- 主内容区 -->
-        <div class="container mt-4">
+        <div class="main-content flex-grow-1 p-4">
             <h1 class="mb-4">仪表板</h1>
 
             <!-- 统计卡片 -->
@@ -91,7 +104,19 @@ export default {
 <style scoped>
 .admin-dashboard {
     min-height: 100vh;
-    background-color: #f8f9fa;
+}
+
+.sidebar {
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link {
+    color: #333;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #007bff;
 }
 
 .card {

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getAuth } from 'firebase/auth'
 import Home from '../views/HomeView.vue'
 import LibraryView from '../views/LibraryView.vue'
 import ArticleDetail from '../views/ArticleDetail.vue'
@@ -8,66 +9,30 @@ import AdminDashboard from '@/views/AdminDashboard.vue'
 import EventsView from '@/views/EventsView.vue'
 import MapView from '@/views/MapView.vue'
 import AddEventView from '@/views/AddEventView.vue'
-import { getAuth } from 'firebase/auth'
+import SendEmailView from '@/views/SendEmailView.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/Firelogin',
-    name: 'FireLogin',
-    component: FirebaseSigninView,
-  },
-  {
-    path: '/FireRegister',
-    name: 'FireRegister',
-    component: FirebaseRegisterView
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: AdminDashboard,
-    meta: { requiresAuth: true, requiresAdmin: true },
-  },
-  {
-    path: '/Events',
-    name: 'Events',
-    component: EventsView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/Map',
-    name: 'Map',
-    component: MapView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/AddEvent',
-    name: 'AddEvent',
-    component: AddEventView,
-    meta: { requiresAuth: true },
-  },
+  { path: '/', name: 'Home', component: Home },
+  { path: '/Firelogin', name: 'FireLogin', component: FirebaseSigninView },
+  { path: '/FireRegister', name: 'FireRegister', component: FirebaseRegisterView },
+  { path: '/admin', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/send-email', name: 'SendEmail', component: SendEmailView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/add-event', name: 'AddEvent', component: AddEventView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/Events', name: 'Events', component: EventsView, meta: { requiresAuth: true } },
+  { path: '/Map', name: 'Map', component: MapView, meta: { requiresAuth: true } },
   {
     path: '/about',
     name: 'About',
     component: () => import('../views/AboutView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }
   },
-  {
-    path: '/library',
-    name: 'Library',
-    component: LibraryView,
-    meta: { requiresAuth: true },
-  },
+  { path: '/library', name: 'Library', component: LibraryView, meta: { requiresAuth: true } },
   {
     path: '/article/:id',
     name: 'ArticleDetail',
     component: ArticleDetail,
     props: true,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -80,11 +45,14 @@ router.beforeEach((to, from, next) => {
   const auth = getAuth()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
+  const isLoggedIn = !!auth.currentUser
+  const isAdmin = auth.currentUser?.email === 'admin@gmail.com'
 
-  if (requiresAuth && !auth.currentUser) {
+  if (requiresAuth && !isLoggedIn) {
     alert('You need to be logged in to access this page.')
     next({ path: '/Firelogin', query: { redirect: to.fullPath } })
-  } else if (requiresAdmin && auth.currentUser?.email !== 'admin@gmail.com') {
+  } else if (requiresAdmin && !isAdmin) {
+    alert('You do not have permission to access this page.')
     next('/')
   } else {
     next()
