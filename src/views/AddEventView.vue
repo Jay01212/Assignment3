@@ -12,7 +12,7 @@
             </div>
             <div class="mb-3">
                 <label for="date" class="form-label">Date:</label>
-                <input type="date" id="date" v-model="date" required class="form-control">
+                <input type="date" id="date" v-model="date" required class="form-control" max="9999-12-31">
             </div>
             <div class="mb-3">
                 <label for="location" class="form-label">Location:</label>

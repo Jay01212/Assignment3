@@ -2,14 +2,14 @@
   <nav class="navigation navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand logo" href="/">MyMentalHealth.com</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" @click="toggleNavbar" aria-controls="navbarNav"
+        :aria-expanded="isNavbarOpen" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse" :class="{ 'show': isNavbarOpen }" id="navbarNav">
         <ul class="navbar-nav nav-center me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <router-link to="/" class="nav-link" active-class="active">Home</router-link>
+            <router-link to="/" class="nav-link" active-class="active" @click="closeNavbar">Home</router-link>
           </li>
           <li class="nav-item">
             <a @click="handleNavClick('/about')" class="nav-link"
@@ -28,24 +28,22 @@
               :class="{ active: $route.path === '/emergency' }">Emergency Help</a>
           </li>
           <li class="nav-item">
-            <router-link to="/Events" class="nav-link" active-class="active">Events</router-link>
+            <router-link to="/Events" class="nav-link" active-class="active" @click="closeNavbar">Events</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/Map" class="nav-link" active-class="active">Map</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/AddEvent" class="nav-link" active-class="active">Add</router-link>
+            <router-link to="/Map" class="nav-link" active-class="active" @click="closeNavbar">Map</router-link>
           </li>
         </ul>
         <ul class="navbar-nav nav-right">
           <li v-if="!isAuthenticated" class="nav-item">
-            <router-link to="/Firelogin" class="nav-link" active-class="active">Login</router-link>
+            <router-link to="/Firelogin" class="nav-link" active-class="active" @click="closeNavbar">Login</router-link>
           </li>
           <li v-else class="nav-item">
             <a @click="handleLogout" class="nav-link" href="#">Logout</a>
           </li>
           <li v-if="!isAuthenticated" class="nav-item">
-            <router-link to="/FireRegister" class="nav-link" active-class="active">Firebase Register</router-link>
+            <router-link to="/FireRegister" class="nav-link" active-class="active" @click="closeNavbar">Firebase
+              Register</router-link>
           </li>
         </ul>
       </div>
@@ -54,6 +52,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useAuthentication } from '../router/authentication'
 import { useRouter } from 'vue-router'
 import { getAuth, signOut } from 'firebase/auth'
@@ -64,6 +63,15 @@ export default {
     const { isAuthenticated, logout } = useAuthentication()
     const router = useRouter()
     const auth = getAuth()
+    const isNavbarOpen = ref(false)
+
+    const toggleNavbar = () => {
+      isNavbarOpen.value = !isNavbarOpen.value
+    }
+
+    const closeNavbar = () => {
+      isNavbarOpen.value = false
+    }
 
     const handleNavClick = (path) => {
       if (!isAuthenticated.value && path !== '/') {
@@ -72,6 +80,7 @@ export default {
       } else {
         router.push(path)
       }
+      closeNavbar()
     }
 
     const handleLogout = () => {
@@ -79,6 +88,7 @@ export default {
         signOut(auth).then(() => {
           logout()
           router.push('/')
+          closeNavbar()
         }).catch((error) => {
           console.error('Logout error:', error)
         })
@@ -88,7 +98,10 @@ export default {
     return {
       isAuthenticated,
       handleNavClick,
-      handleLogout
+      handleLogout,
+      isNavbarOpen,
+      toggleNavbar,
+      closeNavbar
     }
   }
 }
