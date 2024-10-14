@@ -11,6 +11,7 @@
                 <option value="Canceled">Canceled</option>
             </select>
             <button @click="clearFilters" class="btn btn-secondary">Clear Filters</button>
+            <button @click="exportToCSV" class="btn btn-primary">Export to CSV</button>
         </div>
 
         <div class="table-responsive">
@@ -195,6 +196,28 @@ export default {
             }
         };
 
+        const exportToCSV = () => {
+            const headers = ['Event Name', 'Details', 'Date', 'Location', 'Status'];
+            const csvContent = [
+                headers.join(','),
+                ...sortedEvents.value.map(event =>
+                    [event.eventName, event.details, formatDate(event.date), event.location, event.status].map(cell => `"${cell}"`).join(',')
+                )
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'mental_health_events.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        };
+
         return {
             searchQuery,
             statusFilter,
@@ -207,7 +230,8 @@ export default {
             sortAlphabetically,
             changePage,
             formatDate,
-            getStatusClass
+            getStatusClass,
+            exportToCSV
         };
     }
 };
