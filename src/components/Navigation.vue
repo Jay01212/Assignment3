@@ -19,18 +19,14 @@
               @click="closeNavbar">Resources</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/community" class="nav-link" active-class="active"
-              @click="closeNavbar">Community</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/emergency" class="nav-link" active-class="active" @click="closeNavbar">Emergency
-              Help</router-link>
-          </li>
-          <li class="nav-item">
             <router-link to="/Events" class="nav-link" active-class="active" @click="closeNavbar">Events</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/Map" class="nav-link" active-class="active" @click="closeNavbar">Map</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/emergency" class="nav-link" active-class="active" @click="closeNavbar">Emergency
+              Help</router-link>
           </li>
         </ul>
         <ul class="navbar-nav nav-right">

@@ -35,33 +35,39 @@ const routes = [
   {
     path: '/Events',
     name: 'Events',
-    component: EventsView
+    component: EventsView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/Map',
     name: 'Map',
-    component: MapView
+    component: MapView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/AddEvent',
     name: 'AddEvent',
-    component: AddEventView
+    component: AddEventView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/about',
     name: 'About',
     component: () => import('../views/AboutView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/library',
     name: 'Library',
     component: LibraryView,
+    meta: { requiresAuth: true },
   },
   {
     path: '/article/:id',
     name: 'ArticleDetail',
     component: ArticleDetail,
-    props: true
+    props: true,
+    meta: { requiresAuth: true },
   }
 ]
 
@@ -76,7 +82,8 @@ router.beforeEach((to, from, next) => {
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
 
   if (requiresAuth && !auth.currentUser) {
-    next('/Firelogin')
+    alert('You need to be logged in to access this page.')
+    next({ path: '/Firelogin', query: { redirect: to.fullPath } })
   } else if (requiresAdmin && auth.currentUser?.email !== 'admin@gmail.com') {
     next('/')
   } else {
