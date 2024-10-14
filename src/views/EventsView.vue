@@ -11,11 +11,6 @@
                 <option value="Canceled">Canceled</option>
             </select>
             <button @click="clearFilters" class="btn btn-secondary">Clear Filters</button>
-            <select v-model="exportFormat" class="form-select">
-                <option value="csv">CSV</option>
-                <option value="pdf">PDF</option>
-            </select>
-            <button @click="exportData" class="btn btn-primary">Export</button>
         </div>
 
         <div class="table-responsive">
@@ -92,40 +87,43 @@
                 </li>
             </ul>
         </nav>
+
+        <div class="export-container mt-4">
+            <button @click="exportEvents" class="btn btn-primary">Export Events</button>
+        </div>
     </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { db } from '@/firebase/init';
+import { collection, getDocs } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export default {
     name: 'EventsView',
     setup() {
-        const events = ref([
-            { id: 1, eventName: 'Stress Relief Yoga', details: 'Guided yoga session for stress relief', date: '2024-10-18', location: 'Park Pavilion', status: 'Canceled' },
-            { id: 2, eventName: 'Anxiety Support Group', details: 'Weekly support group for managing anxiety', date: '2024-10-20', location: 'Therapy Center', status: 'Open' },
-            { id: 3, eventName: 'Mental Health Webinar', details: 'An online webinar discussing mental wellness', date: '2024-10-25', location: 'Online (Zoom)', status: 'Open' },
-            { id: 4, eventName: 'Wellness Workshop', details: 'A hands-on workshop on mindfulness practices', date: '2024-11-10', location: 'Community Center', status: 'Open' },
-            { id: 5, eventName: 'Depression Awareness', details: 'Seminar focusing on recognizing depression', date: '2024-11-15', location: 'City Hall', status: 'Full' },
-            { id: 6, eventName: 'Art Therapy Session', details: 'Expressive art therapy for emotional healing', date: '2024-11-22', location: 'Art Studio', status: 'Open' },
-            { id: 7, eventName: 'Mindfulness Meditation', details: 'Guided meditation for mental clarity', date: '2024-11-30', location: 'Wellness Center', status: 'Open' },
-            { id: 8, eventName: 'Cognitive Behavioral Therapy Workshop', details: 'Introduction to CBT techniques', date: '2024-12-05', location: 'Psychology Institute', status: 'Open' },
-            { id: 9, eventName: 'Family Mental Health Day', details: 'Activities promoting family mental wellness', date: '2024-12-12', location: 'Community Park', status: 'Open' },
-            { id: 10, eventName: 'Stress Management Seminar', details: 'Techniques for managing daily stress', date: '2024-12-18', location: 'Conference Hall', status: 'Open' },
-            { id: 11, eventName: 'Grief Counseling Group', details: 'Support group for those dealing with loss', date: '2025-01-05', location: 'Counseling Center', status: 'Open' },
-            { id: 12, eventName: 'Positive Psychology Lecture', details: 'Exploring the science of happiness', date: '2025-01-15', location: 'University Auditorium', status: 'Open' },
-            { id: 13, eventName: 'Teen Mental Health Awareness', details: 'Workshop for teenagers and parents', date: '2025-01-22', location: 'High School Gym', status: 'Open' },
-            { id: 14, eventName: 'Workplace Mental Health Seminar', details: 'Promoting mental health at work', date: '2025-02-01', location: 'Business Center', status: 'Open' },
-            { id: 15, eventName: 'Holistic Health Expo', details: 'Exploring mind-body connections', date: '2025-02-10', location: 'Convention Center', status: 'Open' },
-        ]);
-
+        const events = ref([]);
         const searchQuery = ref('');
         const statusFilter = ref('');
         const sortKey = ref('date');
         const sortOrder = ref('asc');
         const currentPage = ref(1);
         const itemsPerPage = 10;
-        const exportFormat = ref('csv');
+
+        const fetchEvents = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'events'));
+                events.value = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+            } catch (error) {
+                console.error("Error fetching events: ", error);
+            }
+        };
+
+        onMounted(fetchEvents);
 
         const filteredEvents = computed(() => {
             return events.value.filter(event => {
@@ -201,81 +199,27 @@ export default {
             }
         };
 
-        const exportToCSV = () => {
-            const headers = ['Event Name', 'Details', 'Date', 'Location', 'Status'];
-            const csvContent = [
-                headers.join(','),
-                ...sortedEvents.value.map(event =>
-                    [event.eventName, event.details, formatDate(event.date), event.location, event.status].map(cell => `"${cell}"`).join(',')
-                )
-            ].join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'mental_health_events.csv');
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        };
-
-        const exportToPDF = () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(18);
-            doc.text('Mental Health Events', 14, 22);
-
-            doc.setFontSize(11);
-            doc.setTextColor(100);
-
-            // Table header
-            let yPos = 30;
-            const headers = ['Event Name', 'Details', 'Date', 'Location', 'Status'];
-            const columnWidths = [50, 60, 25, 30, 25];
-
-            headers.forEach((header, i) => {
-                doc.text(header, 14 + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), yPos);
-            });
-
-            yPos += 10;
-
-            // Table content
-            sortedEvents.value.forEach((event) => {
-                if (yPos > 280) {
-                    doc.addPage();
-                    yPos = 20;
-                }
-
-                const row = [
-                    event.eventName,
-                    event.details,
-                    formatDate(event.date),
-                    event.location,
-                    event.status
-                ];
-
-                row.forEach((cell, i) => {
-                    doc.text(cell.toString(), 14 + columnWidths.slice(0, i).reduce((a, b) => a + b, 0), yPos, {
-                        maxWidth: columnWidths[i]
-                    });
+        const exportEvents = async () => {
+            try {
+                const response = await fetch('https://exportevents-bv5pfxf6qa-uc.a.run.app', {
+                    method: 'GET',
                 });
 
-                yPos += 20;
-            });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
 
-            doc.save('mental_health_events.pdf');
-        };
-
-        const exportData = () => {
-            if (exportFormat.value === 'csv') {
-                exportToCSV();
-            } else if (exportFormat.value === 'pdf') {
-                exportToPDF();
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'events.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error exporting events: ", error);
             }
         };
 
@@ -292,8 +236,7 @@ export default {
             changePage,
             formatDate,
             getStatusClass,
-            exportFormat,
-            exportData
+            exportEvents
         };
     }
 };
@@ -418,5 +361,9 @@ h1 {
 
 .link-icon:hover {
     color: #2a6496;
+}
+
+.export-container {
+    text-align: center;
 }
 </style>
