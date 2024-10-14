@@ -1,16 +1,11 @@
 <template>
   <div id="app">
-    <template v-if="$route.meta.layout !== 'admin'">
-      <header>
-        <Navigation />
-      </header>
-      <main>
-        <router-view></router-view>
-      </main>
-    </template>
-    <template v-else>
+    <header>
+      <Navigation />
+    </header>
+    <main>
       <router-view></router-view>
-    </template>
+    </main>
   </div>
 </template>
 

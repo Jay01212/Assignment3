@@ -2,20 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/HomeView.vue'
 import LibraryView from '../views/LibraryView.vue'
 import ArticleDetail from '../views/ArticleDetail.vue'
-import { useAuthentication } from '../router/authentication'
 import FirebaseSigninView from '@/views/FirebaseSigninView.vue'
 import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import EventsView from '@/views/EventsView.vue'
 import MapView from '@/views/MapView.vue'
 import AddEventView from '@/views/AddEventView.vue'
+import { getAuth } from 'firebase/auth'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home,
-    meta: { requiresAuth: false }
   },
   {
     path: '/Firelogin',
@@ -28,10 +27,10 @@ const routes = [
     component: FirebaseRegisterView
   },
   {
-    path: '/admin-dashboard',
-    name: 'AdminDashboard',
+    path: '/admin',
+    name: 'Admin',
     component: AdminDashboard,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
   {
     path: '/Events',
@@ -52,13 +51,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: () => import('../views/AboutView.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/library',
     name: 'Library',
     component: LibraryView,
-    meta: { requiresAuth: true }
   },
   {
     path: '/article/:id',
@@ -73,13 +70,15 @@ const router = createRouter({
   routes
 })
 
-const { isAuthenticated, isAdmin } = useAuthentication()
-
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated.value) {
-    next({ name: 'FireLogin' })
-  } else if (to.matched.some(record => record.meta.requiresAdmin) && !isAdmin.value) {
-    next({ name: 'Home' })
+  const auth = getAuth()
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
+
+  if (requiresAuth && !auth.currentUser) {
+    next('/Firelogin')
+  } else if (requiresAdmin && auth.currentUser?.email !== 'admin@gmail.com') {
+    next('/')
   } else {
     next()
   }

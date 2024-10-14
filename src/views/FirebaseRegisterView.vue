@@ -1,26 +1,43 @@
 <template>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h1 class="text-center mb-4">W7. Create an Account</h1>
-                <form @submit.prevent="register" class="narrow-form">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control bg-white" id="email" v-model="email" required
-                            placeholder="Enter your email">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control bg-white" id="password" v-model="password" required
-                            placeholder="Enter your password">
-                    </div>
-                    <div class="d-flex justify-content-center gap-2">
-                        <button type="submit" class="btn btn-primary">Save to Firebase</button>
-                        <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
-                    </div>
-                </form>
+    <div class="d-flex flex-column min-vh-100">
+        <div class="container flex-grow-1 d-flex align-items-center">
+            <div class="row justify-content-center w-100">
+                <div class="col-md-6 col-lg-4">
+                    <h1 class="text-center mb-4">Create Your Account</h1>
+                    <form @submit.prevent="register" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" v-model="email" required
+                                placeholder="Email*">
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" v-model="password" required
+                                placeholder="Password*">
+                            <div class="invalid-feedback">Please enter a password.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword"
+                                required placeholder="Confirm Password*">
+                            <div class="invalid-feedback">Passwords do not match.</div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Sign Up</button>
+                            <button type="button" class="btn btn-outline-secondary" disabled>Continue with
+                                Google</button>
+                            <button type="button" class="btn btn-outline-primary" disabled>Continue with
+                                Facebook</button>
+                        </div>
+                    </form>
+                    <p class="text-center mt-3">
+                        Already have an account? <router-link to="/Firelogin">Login here!</router-link>
+                    </p>
+                </div>
             </div>
         </div>
+        <FooterComponent />
     </div>
 </template>
 
@@ -28,57 +45,53 @@
 import { ref } from "vue";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "vue-router";
+import FooterComponent from '@/components/FooterComponent.vue';
 
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 const router = useRouter();
 const auth = getAuth();
 
 const register = () => {
-    createUserWithEmailAndPassword(auth, email.value, password.value)
-        .then((data) => {
-            console.log("Firebase Register Successful!");
-            alert("Registration successful!")
-            router.push("/FireLogin");
-        }).catch((error) => {
-            console.log(error.code)
-            alert("Registration failed!")
-        });
-};
+    if (password.value !== confirmPassword.value) {
+        alert("Passwords do not match.");
+        return;
+    }
 
-const clearForm = () => {
-    email.value = "";
-    password.value = "";
+    createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+            console.log("Registration successful!");
+            router.push("/");
+        })
+        .catch((error) => {
+            console.error(error.code, error.message);
+            alert("Registration failed: " + error.message);
+        });
 };
 </script>
 
 <style scoped>
-.narrow-form {
-    max-width: 300px;
-    margin: 0 auto;
+.form-control {
+    border-radius: 20px;
 }
 
-.form-control {
-    border: 1px solid #ced4da;
+.btn {
+    border-radius: 20px;
+    padding: 10px 20px;
 }
 
 .btn-primary {
-    background-color: #275fda;
-    border-color: #4285f4;
+    background-color: #4a90e2;
+    border-color: #4a90e2;
 }
 
-.btn-primary:hover {
-    background-color: #1c4cb3;
-    border-color: #1c4cb3;
+a {
+    color: #4a90e2;
+    text-decoration: none;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #5a6268;
+a:hover {
+    text-decoration: underline;
 }
 </style>

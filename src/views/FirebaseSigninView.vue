@@ -55,7 +55,7 @@ const signin = () => {
             const isAdmin = email.value === "admin@gmail.com";
             setAuthStatus(true, isAdmin);
             if (isAdmin) {
-                router.push("/admin-dashboard");
+                router.push("/admin");
             } else {
                 router.push("/");
             }

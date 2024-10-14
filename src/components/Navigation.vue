@@ -12,20 +12,19 @@
             <router-link to="/" class="nav-link" active-class="active" @click="closeNavbar">Home</router-link>
           </li>
           <li class="nav-item">
-            <a @click="handleNavClick('/about')" class="nav-link"
-              :class="{ active: $route.path === '/about' }">About</a>
+            <router-link to="/about" class="nav-link" active-class="active" @click="closeNavbar">About</router-link>
           </li>
           <li class="nav-item">
-            <a @click="handleNavClick('/resources')" class="nav-link"
-              :class="{ active: $route.path === '/resources' }">Resources</a>
+            <router-link to="/resources" class="nav-link" active-class="active"
+              @click="closeNavbar">Resources</router-link>
           </li>
           <li class="nav-item">
-            <a @click="handleNavClick('/community')" class="nav-link"
-              :class="{ active: $route.path === '/community' }">Community</a>
+            <router-link to="/community" class="nav-link" active-class="active"
+              @click="closeNavbar">Community</router-link>
           </li>
           <li class="nav-item">
-            <a @click="handleNavClick('/emergency')" class="nav-link"
-              :class="{ active: $route.path === '/emergency' }">Emergency Help</a>
+            <router-link to="/emergency" class="nav-link" active-class="active" @click="closeNavbar">Emergency
+              Help</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/Events" class="nav-link" active-class="active" @click="closeNavbar">Events</router-link>
@@ -35,15 +34,14 @@
           </li>
         </ul>
         <ul class="navbar-nav nav-right">
-          <li v-if="!isAuthenticated" class="nav-item">
+          <li v-if="!currentUser" class="nav-item">
             <router-link to="/Firelogin" class="nav-link" active-class="active" @click="closeNavbar">Login</router-link>
           </li>
           <li v-else class="nav-item">
             <a @click="handleLogout" class="nav-link" href="#">Logout</a>
           </li>
-          <li v-if="!isAuthenticated" class="nav-item">
-            <router-link to="/FireRegister" class="nav-link" active-class="active" @click="closeNavbar">Firebase
-              Register</router-link>
+          <li v-if="isAdmin" class="nav-item">
+            <router-link to="/admin" class="nav-link" active-class="active" @click="closeNavbar">Admin</router-link>
           </li>
         </ul>
       </div>
@@ -52,18 +50,25 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useAuthentication } from '../router/authentication'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAuth, signOut } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 
 export default {
   name: 'Navigation',
   setup() {
-    const { isAuthenticated, logout } = useAuthentication()
     const router = useRouter()
     const auth = getAuth()
+    const currentUser = ref(null)
     const isNavbarOpen = ref(false)
+
+    const isAdmin = computed(() => currentUser.value?.email === 'admin@gmail.com')
+
+    onMounted(() => {
+      onAuthStateChanged(auth, (user) => {
+        currentUser.value = user
+      })
+    })
 
     const toggleNavbar = () => {
       isNavbarOpen.value = !isNavbarOpen.value
@@ -73,20 +78,9 @@ export default {
       isNavbarOpen.value = false
     }
 
-    const handleNavClick = (path) => {
-      if (!isAuthenticated.value && path !== '/') {
-        alert('Your request has been denied because the user is not logged in')
-        router.push('/Firelogin')
-      } else {
-        router.push(path)
-      }
-      closeNavbar()
-    }
-
     const handleLogout = () => {
       if (confirm('Are you sure you want to log out?')) {
         signOut(auth).then(() => {
-          logout()
           router.push('/')
           closeNavbar()
         }).catch((error) => {
@@ -96,8 +90,8 @@ export default {
     }
 
     return {
-      isAuthenticated,
-      handleNavClick,
+      currentUser,
+      isAdmin,
       handleLogout,
       isNavbarOpen,
       toggleNavbar,
@@ -106,6 +100,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .navigation {
