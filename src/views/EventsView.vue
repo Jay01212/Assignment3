@@ -89,6 +89,10 @@
         </nav>
 
         <div class="export-container mt-4">
+            <select v-model="exportFormat" class="form-select me-2" style="width: auto; display: inline-block;">
+                <option value="csv">CSV</option>
+                <option value="pdf">PDF</option>
+            </select>
             <button @click="exportEvents" class="btn btn-primary">Export Events</button>
         </div>
     </div>
@@ -98,7 +102,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { db } from '@/firebase/init';
 import { collection, getDocs } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export default {
     name: 'EventsView',
@@ -199,9 +202,11 @@ export default {
             }
         };
 
+        const exportFormat = ref('csv');
+
         const exportEvents = async () => {
             try {
-                const response = await fetch('https://exportevents-bv5pfxf6qa-uc.a.run.app', {
+                const response = await fetch(`https://exportevents-bv5pfxf6qa-uc.a.run.app?format=${exportFormat.value}`, {
                     method: 'GET',
                 });
 
@@ -214,7 +219,7 @@ export default {
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'events.csv';
+                a.download = `events.${exportFormat.value}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -222,6 +227,7 @@ export default {
                 console.error("Error exporting events: ", error);
             }
         };
+
 
         return {
             searchQuery,
@@ -236,6 +242,7 @@ export default {
             changePage,
             formatDate,
             getStatusClass,
+            exportFormat,
             exportEvents
         };
     }
