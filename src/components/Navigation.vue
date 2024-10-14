@@ -33,6 +33,9 @@
           <li class="nav-item">
             <router-link to="/Map" class="nav-link" active-class="active">Map</router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/AddEvent" class="nav-link" active-class="active">Add</router-link>
+          </li>
         </ul>
         <ul class="navbar-nav nav-right">
           <li v-if="!isAuthenticated" class="nav-item">

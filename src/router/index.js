@@ -8,6 +8,7 @@ import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import EventsView from '@/views/EventsView.vue'
 import MapView from '@/views/MapView.vue'
+import AddEventView from '@/views/AddEventView.vue'
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
     path: '/Map',
     name: 'Map',
     component: MapView
+  },
+  {
+    path: '/AddEvent',
+    name: 'AddEvent',
+    component: AddEventView
   },
   {
     path: '/about',
