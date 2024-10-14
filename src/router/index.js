@@ -9,6 +9,7 @@ import AdminDashboard from '@/views/AdminDashboard.vue'
 import ResourceView from '@/views/ResourceView.vue'
 import EventsView from '@/views/EventsView.vue'
 import MapView from '@/views/MapView.vue'
+import AddResourceView from '@/views/AddResourceView.vue'
 import AddEventView from '@/views/AddEventView.vue'
 import SendEmailView from '@/views/SendEmailView.vue'
 
@@ -18,6 +19,7 @@ const routes = [
   { path: '/FireRegister', name: 'FireRegister', component: FirebaseRegisterView },
   { path: '/admin', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin/send-email', name: 'SendEmail', component: SendEmailView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/admin/add-resource', name: 'AddResource', component: AddResourceView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin/add-event', name: 'AddEvent', component: AddEventView, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/Resource', name: 'Resource', component: ResourceView, meta: { requiresAuth: true } },
   { path: '/Events', name: 'Events', component: EventsView, meta: { requiresAuth: true } },

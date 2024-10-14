@@ -175,31 +175,6 @@ input:focus {
   outline-offset: 2px;
 }
 
-/* Ensure that the text has sufficient contrast against different backgrounds */
-.bg-secondary {
-  background-color: #6c757d !important;
-  color: #ffffff;
-}
-
-.bg-secondary h2,
-.bg-secondary h3,
-.bg-secondary p {
-  color: #ffffff;
-}
-
-/* Add visualization hidden classes */
-.visually-hidden {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .image-container {

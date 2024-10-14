@@ -8,6 +8,9 @@
                     <router-link to="/admin/send-email" class="nav-link">发送邮件</router-link>
                 </li>
                 <li class="nav-item">
+                    <router-link to="/admin/add-resource" class="nav-link">ziyuanguanli</router-link>
+                </li>
+                <li class="nav-item">
                     <router-link to="/admin/add-event" class="nav-link">活动管理</router-link>
                 </li>
             </ul>
