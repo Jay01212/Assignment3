@@ -79,7 +79,7 @@ exports.exportEvents = onRequest((req, res) => {
     });
 });
 
-// Export Resource Function
+// Export Resource Functions
 exports.exportResources = onRequest((req, res) => {
     cors(req, res, async () => {
         try {
@@ -129,6 +129,86 @@ exports.exportResources = onRequest((req, res) => {
         } catch (error) {
             console.error("Error exporting resources:", error.message);
             res.status(500).send("Error exporting resources");
+        }
+    });
+});
+
+// Send Email Function
+exports.sendEmail = onRequest((req, res) => {
+    cors(req, res, async () => {
+        if (req.method !== "POST") {
+            res.status(405).send({error: "Method not allowed"});
+            return;
+        }
+
+        try {
+            const { to, subject, text, attachment } = req.body;
+
+            const data = {
+                personalizations: [
+                    {
+                        to: [{email: to}],
+                        subject: subject,
+                    },
+                ],
+                from: {email: "j1531502692@gmail.com"},
+                content: [
+                    {
+                        type: "text/plain",
+                        value: text,
+                    },
+                ],
+            };
+
+            if (attachment) {
+                data.attachments = [{
+                    content: attachment.content,
+                    filename: attachment.filename,
+                    type: attachment.type,
+                    disposition: attachment.disposition,
+                }];
+            }
+
+            const sendgridApiKey = "SG.L2T5xd8iQQO4HZcEEmtuYA.KATElJLfj4mx"+
+            "2hBXZIK8MJg6TVLViDOdw-E4iBDToTQ";
+
+            const options = {
+                hostname: "api.sendgrid.com",
+                port: 443,
+                path: "/v3/mail/send",
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${sendgridApiKey}`,
+                    "Content-Type": "application/json",
+                },
+            };
+
+            const sendgridReq = https.request(options, (sendgridRes) => {
+                let responseData = "";
+                sendgridRes.on("data", (chunk) => {
+                    responseData += chunk;
+                });
+                sendgridRes.on("end", () => {
+                    if (sendgridRes.statusCode >= 200 && sendgridRes.statusCode < 300) {
+                        res.status(200).send({success: true});
+                    } else {
+                        console.error("Error sending email:", responseData);
+                        res.status(500).send({success: false, error: responseData});
+                    }
+                });
+            });
+
+            sendgridReq.on("error", (error) => {
+                console.error("Error sending email:", error);
+                res.status(500).send({success: false, error: error.message});
+            });
+
+            sendgridReq.write(JSON.stringify(data));
+            sendgridReq.end();
+
+        } catch (error) {
+            console.error("Error processing request:", error);
+            res.status(500).send({success: false, error: "Internal server error"});
         }
     });
 });

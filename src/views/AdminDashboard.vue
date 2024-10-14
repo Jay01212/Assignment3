@@ -8,10 +8,10 @@
                     <router-link to="/admin/send-email" class="nav-link">Send Email</router-link>
                 </li>
                 <li class="nav-item">
-                    <router-link to="/admin/add-resource" class="nav-link">Resource Management</router-link>
+                    <router-link to="/admin/resource-management" class="nav-link">Resource Management</router-link>
                 </li>
                 <li class="nav-item">
-                    <router-link to="/admin/add-event" class="nav-link">Event Management</router-link>
+                    <router-link to="/admin/event-management" class="nav-link">Event Management</router-link>
                 </li>
             </ul>
         </div>
