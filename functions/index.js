@@ -23,7 +23,7 @@ admin.initializeApp();
 //   response.send("Hello from Firebase!");
 // });
 
-// 新增: 导出事件功能
+// Export Event Function
 exports.exportEvents = onRequest((req, res) => {
     cors(req, res, async () => {
         try {
@@ -75,6 +75,60 @@ exports.exportEvents = onRequest((req, res) => {
         } catch (error) {
             console.error("Error exporting events:", error.message);
             res.status(500).send("Error exporting events");
+        }
+    });
+});
+
+// Export Resource Function
+exports.exportResources = onRequest((req, res) => {
+    cors(req, res, async () => {
+        try {
+            const format = req.query.format || 'csv';
+            const resourcesCollection = admin.firestore().collection("resources");
+            const snapshot = await resourcesCollection.get();
+            const resources = snapshot.docs.map(doc => doc.data());
+
+            if (format === 'csv') {
+                const headers = ['Resource Name', 'Description', 'Category', 'Access Link'];
+                const csvRows = [
+                    headers.join(','),
+                    ...resources.map(resource => [
+                        resource.resourceName,
+                        resource.description,
+                        resource.category,
+                        resource.accessLink
+                    ].map(field => `"${field}"`).join(','))
+                ];
+                const csvContent = csvRows.join('\n');
+
+                res.setHeader('Content-Type', 'text/csv');
+                res.setHeader('Content-Disposition', 'attachment; filename=resources.csv');
+                res.status(200).send(csvContent);
+            } else if (format === 'pdf') {
+                const doc = new PDFDocument();
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=resources.pdf');
+
+                doc.pipe(res);
+
+                doc.fontSize(16).text('Mental Health Resources', { align: 'center' });
+                doc.moveDown();
+
+                resources.forEach(resource => {
+                    doc.fontSize(14).text(resource.resourceName);
+                    doc.fontSize(10).text(`Description: ${resource.description}`);
+                    doc.text(`Category: ${resource.category}`);
+                    doc.text(`Access Link: ${resource.accessLink}`);
+                    doc.moveDown();
+                });
+
+                doc.end();
+            } else {
+                throw new Error('Invalid format');
+            }
+        } catch (error) {
+            console.error("Error exporting resources:", error.message);
+            res.status(500).send("Error exporting resources");
         }
     });
 });

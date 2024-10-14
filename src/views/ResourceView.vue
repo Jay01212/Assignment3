@@ -1,14 +1,12 @@
 <template>
-    <div class="events-view">
-        <h1 class="text-center mb-4">Mental Health Events</h1>
+    <div class="resources-view">
+        <h1 class="text-center mb-4">Mental Health Resources</h1>
 
         <div class="filter-container mb-4">
-            <input v-model="searchQuery" @input="handleSearch" class="form-control" placeholder="Search events...">
-            <select v-model="statusFilter" @change="handleSearch" class="form-select">
-                <option value="">All Statuses</option>
-                <option value="Open">Open</option>
-                <option value="Full">Full</option>
-                <option value="Canceled">Canceled</option>
+            <input v-model="searchQuery" @input="handleSearch" class="form-control" placeholder="Search resources...">
+            <select v-model="categoryFilter" @change="handleSearch" class="form-select">
+                <option value="">All Categories</option>
+                <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
             </select>
             <button @click="clearFilters" class="btn btn-secondary">Clear Filters</button>
         </div>
@@ -18,62 +16,39 @@
                 <thead>
                     <tr>
                         <th>
-                            Event Name
+                            Resource Name
                             <div class="filter-buttons">
-                                <button @click="sortAlphabetically('eventName', 'asc')"
+                                <button @click="sortAlphabetically('resourceName', 'asc')"
                                     class="btn btn-sm btn-outline-primary">A-Z</button>
-                                <button @click="sortAlphabetically('eventName', 'desc')"
+                                <button @click="sortAlphabetically('resourceName', 'desc')"
                                     class="btn btn-sm btn-outline-primary">Z-A</button>
                             </div>
                         </th>
+                        <th>Description</th>
                         <th>
-                            Details
+                            Category
                             <div class="filter-buttons">
-                                <button @click="sortAlphabetically('details', 'asc')"
+                                <button @click="sortAlphabetically('category', 'asc')"
                                     class="btn btn-sm btn-outline-primary">A-Z</button>
-                                <button @click="sortAlphabetically('details', 'desc')"
+                                <button @click="sortAlphabetically('category', 'desc')"
                                     class="btn btn-sm btn-outline-primary">Z-A</button>
                             </div>
                         </th>
-                        <th>
-                            Date
-                            <div class="filter-buttons">
-                                <button @click="sort('date', 'asc')" class="btn btn-sm btn-outline-primary">↑</button>
-                                <button @click="sort('date', 'desc')" class="btn btn-sm btn-outline-primary">↓</button>
-                            </div>
-                        </th>
-                        <th>
-                            Location
-                            <div class="filter-buttons">
-                                <button @click="sortAlphabetically('location', 'asc')"
-                                    class="btn btn-sm btn-outline-primary">A-Z</button>
-                                <button @click="sortAlphabetically('location', 'desc')"
-                                    class="btn btn-sm btn-outline-primary">Z-A</button>
-                            </div>
-                        </th>
-                        <th>Status</th>
+                        <th>Access Link</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="event in paginatedEvents" :key="event.id">
-                        <td>
-                            {{ event.eventName }}
-                            <a href="#" class="link-icon" @click.prevent="showEventDetails(event)">
-                                <i class="fas fa-link"></i>
-                            </a>
-                        </td>
-                        <td>{{ event.details }}</td>
-                        <td>{{ formatDate(event.date) }}</td>
-                        <td>{{ event.location }}</td>
-                        <td>
-                            <span :class="getStatusClass(event.status)">{{ event.status }}</span>
-                        </td>
+                    <tr v-for="resource in paginatedResources" :key="resource.id">
+                        <td>{{ resource.resourceName }}</td>
+                        <td>{{ resource.description }}</td>
+                        <td>{{ resource.category }}</td>
+                        <td><a :href="resource.accessLink" target="_blank">Access Resource</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <nav aria-label="Events pagination" class="mt-4">
+        <nav aria-label="Resources pagination" class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
                     <a class="page-link" href="#" @click.prevent="changePage(currentPage - 1)">Previous</a>
@@ -93,7 +68,7 @@
                 <option value="csv">CSV</option>
                 <option value="pdf">PDF</option>
             </select>
-            <button @click="exportEvents" class="btn btn-primary">Export Events</button>
+            <button @click="exportResources" class="btn btn-primary">Export Resources</button>
         </div>
     </div>
 </template>
@@ -104,61 +79,56 @@ import { db } from '@/firebase/init';
 import { collection, getDocs } from 'firebase/firestore';
 
 export default {
-    name: 'EventsView',
+    name: 'ResourcesView',
     setup() {
-        const events = ref([]);
+        const resources = ref([]);
         const searchQuery = ref('');
-        const statusFilter = ref('');
-        const sortKey = ref('date');
+        const categoryFilter = ref('');
+        const sortKey = ref('resourceName');
         const sortOrder = ref('asc');
         const currentPage = ref(1);
         const itemsPerPage = 10;
+        const exportFormat = ref('csv');
 
-        const fetchEvents = async () => {
+        const categories = ['Self-help', 'Professional Support', 'Crisis Intervention', 'Community Resources'];
+
+        const fetchResources = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, 'events'));
-                events.value = querySnapshot.docs.map(doc => ({
+                const querySnapshot = await getDocs(collection(db, 'resources'));
+                resources.value = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 }));
             } catch (error) {
-                console.error("Error fetching events: ", error);
+                console.error("Error fetching resources: ", error);
             }
         };
 
-        onMounted(fetchEvents);
+        onMounted(fetchResources);
 
-        const filteredEvents = computed(() => {
-            return events.value.filter(event => {
-                const matchesSearch = event.eventName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                    event.details.toLowerCase().includes(searchQuery.value.toLowerCase());
-                const matchesStatus = !statusFilter.value || event.status === statusFilter.value;
-                return matchesSearch && matchesStatus;
+        const filteredResources = computed(() => {
+            return resources.value.filter(resource => {
+                const matchesSearch = resource.resourceName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                    resource.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+                const matchesCategory = !categoryFilter.value || resource.category === categoryFilter.value;
+                return matchesSearch && matchesCategory;
             });
         });
 
-        const sortedEvents = computed(() => {
-            return [...filteredEvents.value].sort((a, b) => {
-                let aValue = a[sortKey.value];
-                let bValue = b[sortKey.value];
-
-                if (sortKey.value === 'date') {
-                    aValue = new Date(aValue);
-                    bValue = new Date(bValue);
-                }
-
-                if (aValue < bValue) return sortOrder.value === 'asc' ? -1 : 1;
-                if (aValue > bValue) return sortOrder.value === 'asc' ? 1 : -1;
+        const sortedResources = computed(() => {
+            return [...filteredResources.value].sort((a, b) => {
+                if (a[sortKey.value] < b[sortKey.value]) return sortOrder.value === 'asc' ? -1 : 1;
+                if (a[sortKey.value] > b[sortKey.value]) return sortOrder.value === 'asc' ? 1 : -1;
                 return 0;
             });
         });
 
-        const totalPages = computed(() => Math.ceil(sortedEvents.value.length / itemsPerPage));
+        const totalPages = computed(() => Math.ceil(sortedResources.value.length / itemsPerPage));
 
-        const paginatedEvents = computed(() => {
+        const paginatedResources = computed(() => {
             const start = (currentPage.value - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            return sortedEvents.value.slice(start, end);
+            return sortedResources.value.slice(start, end);
         });
 
         const handleSearch = () => {
@@ -167,19 +137,15 @@ export default {
 
         const clearFilters = () => {
             searchQuery.value = '';
-            statusFilter.value = '';
-            sortKey.value = 'date';
+            categoryFilter.value = '';
+            sortKey.value = 'resourceName';
             sortOrder.value = 'asc';
             currentPage.value = 1;
         };
 
-        const sort = (key, order) => {
+        const sortAlphabetically = (key, order) => {
             sortKey.value = key;
             sortOrder.value = order;
-        };
-
-        const sortAlphabetically = (key, order) => {
-            sort(key, order);
         };
 
         const changePage = (page) => {
@@ -188,25 +154,9 @@ export default {
             }
         };
 
-        const formatDate = (dateString) => {
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-GB', options);
-        };
-
-        const getStatusClass = (status) => {
-            switch (status) {
-                case 'Open': return 'badge bg-success';
-                case 'Full': return 'badge bg-warning';
-                case 'Canceled': return 'badge bg-danger';
-                default: return 'badge bg-secondary';
-            }
-        };
-
-        const exportFormat = ref('csv');
-
-        const exportEvents = async () => {
+        const exportResources = async () => {
             try {
-                const response = await fetch(`https://exportevents-bv5pfxf6qa-uc.a.run.app?format=${exportFormat.value}`, {
+                const response = await fetch(`https://exportresources-bv5pfxf6qa-uc.a.run.app?format=${exportFormat.value}`, {
                     method: 'GET',
                 });
 
@@ -219,38 +169,35 @@ export default {
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = `events.${exportFormat.value}`;
+                a.download = `resources.${exportFormat.value}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
             } catch (error) {
-                console.error("Error exporting events: ", error);
+                console.error("Error exporting resources: ", error);
             }
         };
 
-
         return {
             searchQuery,
-            statusFilter,
+            categoryFilter,
+            categories,
             currentPage,
             totalPages,
-            paginatedEvents,
+            paginatedResources,
             handleSearch,
             clearFilters,
-            sort,
             sortAlphabetically,
             changePage,
-            formatDate,
-            getStatusClass,
             exportFormat,
-            exportEvents
+            exportResources
         };
     }
 };
 </script>
 
 <style scoped>
-.events-view {
+.resources-view {
     font-family: Arial, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
@@ -294,12 +241,6 @@ h1 {
     font-size: 0.75rem;
 }
 
-.badge {
-    font-size: 0.8rem;
-    padding: 5px 10px;
-    border-radius: 20px;
-}
-
 .pagination {
     margin-top: 20px;
 }
@@ -333,24 +274,6 @@ h1 {
     vertical-align: middle;
 }
 
-.badge {
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
-.bg-success {
-    background-color: #28a745 !important;
-}
-
-.bg-warning {
-    background-color: #ffc107 !important;
-    color: #212529;
-}
-
-.bg-danger {
-    background-color: #dc3545 !important;
-}
-
 .filter-buttons .btn {
     border: 1px solid #4a90e2;
     color: #4a90e2;
@@ -359,15 +282,6 @@ h1 {
 .filter-buttons .btn:hover {
     background-color: #4a90e2;
     color: white;
-}
-
-.link-icon {
-    margin-left: 5px;
-    color: #4a90e2;
-}
-
-.link-icon:hover {
-    color: #2a6496;
 }
 
 .export-container {
